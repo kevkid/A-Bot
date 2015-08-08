@@ -129,13 +129,24 @@ public class TradeBot {
 		StartPairBuy = (StartPairOrderBook.getAsks().get(0).getLimitPrice()).doubleValue();//buys
 		StartPairSell = (StartPairOrderBook.getBids().get(0).getLimitPrice()).doubleValue();//sells
 		StartPairFee = getFees(StartPair);//getFee
-		StartPurchaseAmount = (StartCoinBalance-(StartCoinBalance*StartPairFee))/StartPairBuy;//how many coins I can buy with the amount of start coins.
+		if(StartCoin.equalsIgnoreCase(StartPair.counterSymbol)){
+			StartPurchaseAmount = (StartCoinBalance-(StartCoinBalance*StartPairFee))/StartPairBuy;//how many coins I can buy with the amount of start coins.
+		}
+		else{
+			StartPurchaseAmount = (StartCoinBalance-(StartCoinBalance*StartPairFee))*StartPairSell;//how many coins I can buy with the amount of start coins.
+		}
 
 		OrderBook EndPairOrderBook = MarketDataService.getOrderBook(EndPair);
 		EndPairBuy = EndPairOrderBook.getAsks().get(0).getLimitPrice().doubleValue();//buys
 		EndPairSell = EndPairOrderBook.getBids().get(0).getLimitPrice().doubleValue();//sells
 		EndPairFee = getFees(EndPair);
-		EndPurchaseAmount = (StartPurchaseAmount-(StartPurchaseAmount*EndPairFee))*EndPairSell;
+		if(EndCoin.equalsIgnoreCase(EndPair.baseSymbol)){
+			EndPurchaseAmount = (StartPurchaseAmount-(StartPurchaseAmount*EndPairFee))/EndPairBuy;
+
+		}
+		else{
+			EndPurchaseAmount = (StartPurchaseAmount-(StartPurchaseAmount*EndPairFee))*EndPairSell;	
+		}
 		
 		//BackToStart
 		CurrencyPair BackToStartCurrencyPair = new CurrencyPair(EndCoin, StartCoin);
@@ -143,7 +154,12 @@ public class TradeBot {
 		BackToStartCurrencyPairBuy = BackToStartCurrencyOrderBook.getAsks().get(0).getLimitPrice().doubleValue();//buys
 		BackToStartCurrencyPairSell = BackToStartCurrencyOrderBook.getBids().get(0).getLimitPrice().doubleValue();//sells
 		BackToStartCurrencyPairFee = getFees(BackToStartCurrencyPair);
-		BackToStartCurrencyPairAmount = (EndPurchaseAmount-(EndPurchaseAmount*BackToStartCurrencyPairFee))*BackToStartCurrencyPairSell;
+		if(StartCoin.equalsIgnoreCase(EndPair.baseSymbol)){
+			BackToStartCurrencyPairAmount = (EndPurchaseAmount-(EndPurchaseAmount*BackToStartCurrencyPairFee))/BackToStartCurrencyPairBuy;	
+		}
+		else{
+			BackToStartCurrencyPairAmount = (EndPurchaseAmount-(EndPurchaseAmount*BackToStartCurrencyPairFee))*BackToStartCurrencyPairSell;	
+		}
 		
 		/*OrderBook DirectPairOrderBook = MarketDataService.getOrderBook(DirectPair);
 		DirectPairBuy =  DirectPairOrderBook.getAsks().get(0).getLimitPrice().doubleValue();
