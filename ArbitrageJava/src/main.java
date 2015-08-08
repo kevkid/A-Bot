@@ -23,7 +23,7 @@ public class main {
 	public static void main(String [] arg){
 		/*String s = CallAPI.GetJson("https://api.cryptsy.com/api/v2/markets/");//market_currency_id":"1"
 		JSONObject json = new JSONObject(s);
-		JSONArray data = json.getJSONArray("data");
+		JSONArray data = json.getJSONArray("data")
 		for(int index = 0; index < data.length(); index++){
 			int Market_Currency = data.getJSONObject(index).getInt("market_currency_id");
 			String label = data.getJSONObject(index).getString("label").replace('/', '_');
