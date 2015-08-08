@@ -34,8 +34,8 @@ public class main {
 		}*/
 		
 		ExchangeSpecification ex_spec = new ExchangeSpecification(CryptsyExchange.class);
-		ex_spec.setApiKey("e83a13328b76aa2c098a990d57dce0998694bb43");
-		ex_spec.setSecretKey("f967a660b06d250b325cb8303c20c7b7e09a92f10d9c918e855b9244fb99432d89fa235075c1797c");
+		ex_spec.setApiKey("");
+		ex_spec.setSecretKey("");
 		Exchange ex = ExchangeFactory.INSTANCE.createExchange(ex_spec);
 		PollingAccountService accountService = ex.getPollingAccountService();
 	    PollingMarketDataService marketDataService = ex.getPollingMarketDataService();
