@@ -5,6 +5,7 @@ import com.xeiam.xchange.currency.CurrencyPair;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.PublicKey;
+import java.util.List;
 
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
@@ -18,6 +19,7 @@ import com.xeiam.xchange.service.polling.account.PollingAccountService;
 import com.xeiam.xchange.service.polling.marketdata.PollingMarketDataService;
 import com.xeiam.xchange.service.polling.trade.PollingTradeService;
 import com.xeiam.xchange.cryptsy.CryptsyExchange;
+import com.xeiam.xchange.cryptsy.dto.marketdata.CryptsyMarketData;
 import com.xeiam.xchange.cryptsy.dto.marketdata.CryptsyPublicMarketData;
 import com.xeiam.xchange.cryptsy.dto.marketdata.CryptsyPublicOrderbook;
 import com.xeiam.xchange.cryptsy.service.polling.CryptsyAccountServiceRaw;
@@ -159,22 +161,60 @@ public class TradeBot {
 	public double getFees(CurrencyPair pair){
 		double PairFee = 0.0;
 		double VolumeInBTC = 0.0;
-		double VolumeInBaseCurrency;
 		String baseCoin = "";
 		OrderBook PairVolume;
+		if(pair.counterSymbol.equalsIgnoreCase("USD")){
+			switch (pair.baseSymbol) {
+			case "BTC":
+				return 0.0025;
+			case "LTC":
+				return 0.0025;
+			case "DASH":
+				return 0.0025;
+			case "XRP":
+				return 0.0029;
+			case "FTC":
+				return 0.0033;
+			case "DOGE":
+				return 0.0029;
+			case "XYP":
+				return 0.0033;
+			case "NXT":
+				return 0.0029;
+			case "EUR":
+				return 0.0029;
+			case "PPC":
+				return 0.0029;
+			case "ZRC":
+				return 0.0031;
+			default:
+				System.exit(1);//Something went wrong
+				break;
+			}
+		}
 		try {
 			if(pair.baseSymbol.equalsIgnoreCase("BTC")){
 				baseCoin = pair.counterSymbol;
-				PairVolume = MarketDataService.getOrderBook(new CurrencyPair("BTC", baseCoin));		
-				//((CryptsyMarketDataServiceRaw) MarketDataService).getCryptsyMarkets().getReturnValue().get(0).get24hBTCVolume();
-				VolumeInBaseCurrency = MarketDataService.getTicker(pair).getVolume().doubleValue();
-				VolumeInBTC = VolumeInBaseCurrency;
+				PairVolume = MarketDataService.getOrderBook(new CurrencyPair("BTC", baseCoin));
+				List<CryptsyMarketData> markets = ((CryptsyMarketDataServiceRaw) MarketDataService).getCryptsyMarkets().getReturnValue();//.get(1).get24hBTCVolume().doubleValue();
+				for(CryptsyMarketData market: markets){
+					if(market.getPrimaryCurrencyCode().equals(pair.baseSymbol) && market.getSecondaryCurrencyCode().equals(pair.counterSymbol)){
+						VolumeInBTC = market.get24hBTCVolume().doubleValue();
+						break;
+					}
+				}
 			}
 			else{
 				baseCoin = pair.baseSymbol;
 				PairVolume = MarketDataService.getOrderBook(new CurrencyPair(baseCoin, "BTC"));
-				VolumeInBaseCurrency = MarketDataService.getTicker(pair).getVolume().doubleValue();
-				VolumeInBTC = VolumeInBaseCurrency *PairVolume.getAsks().get(0).getLimitPrice().doubleValue();//StartPairSell;//This give the volume in btc
+				List<CryptsyMarketData> markets = ((CryptsyMarketDataServiceRaw) MarketDataService).getCryptsyMarkets().getReturnValue();//.get(1).get24hBTCVolume().doubleValue();
+				System.out.println(markets);
+				for(CryptsyMarketData market: markets){
+					if(market.getPrimaryCurrencyCode().equalsIgnoreCase(pair.baseSymbol) && market.getSecondaryCurrencyCode().equalsIgnoreCase(pair.counterSymbol)){
+						VolumeInBTC = market.get24hBTCVolume().doubleValue();
+						break;
+					}
+				}
 			}
 			
 		} catch (ExchangeException | NotAvailableFromExchangeException | NotYetImplementedForExchangeException
