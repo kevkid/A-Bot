@@ -115,13 +115,24 @@ public class TradeBot {
 		 * The startcoin is the one which only shows up in startpair and not in endpair
 		 * The endcoin is the one which only shows up in the endpair 
 		 * */
-		if(StartPair.baseSymbol.equals(EndPair.baseSymbol)){
+		if(StartPair.baseSymbol.equals(EndPair.baseSymbol) || StartPair.baseSymbol.equals(EndPair.counterSymbol)){
 			StartCoin = StartPair.counterSymbol;
-			EndCoin = EndPair.counterSymbol;
+			if(StartPair.baseSymbol.equals(EndPair.baseSymbol)){
+				EndCoin = EndPair.counterSymbol;
+			}
+			else{
+				EndCoin = EndPair.baseSymbol;
+			}
 		}
 		else{
 			StartCoin = StartPair.baseSymbol;
-			EndCoin = EndPair.baseSymbol;
+			if(StartPair.counterSymbol.equals(EndPair.baseSymbol)){
+				EndCoin = EndPair.baseSymbol;
+			}
+			else{
+				EndCoin = EndPair.counterSymbol;
+			}
+			
 		}
 		
 		StartCoinBalance = AccountService.getAccountInfo().getBalance(StartCoin).doubleValue();

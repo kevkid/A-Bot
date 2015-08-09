@@ -35,17 +35,17 @@ public class Market {
 		return Double.parseDouble(topBuyOrder.get("price").toString());
 	}
 	public double getBuyFee() throws Exception{//returns percent
-		String sign = Authenticated.generateHMAC("method=markets&id=BTC_USD&action=fees", privateKey);
-		String json = CallAPI.Post(fee, publicKey, sign);
+		//String sign = Authenticated.generateHMAC("method=markets&id=BTC_USD&action=fees", privateKey);
+		String json = CallAPI.Post(fee, publicKey, "");
 		JSONObject obj = new JSONObject(json);
 		JSONObject data = obj.getJSONObject("data");
 		JSONArray fee = data.getJSONArray("buyfeepercent");
 		return fee.getDouble(0);
 	}
 	public double getSellFee() throws Exception{//returns percent
-		String sign = Authenticated.generateHMAC("method=markets&id=BTC_USD&action=fees", privateKey);
+//		String sign = Authenticated.generateHMAC("method=markets&id=BTC_USD&action=fees", privateKey);
 		//String sign = Authenticated.generateHMAC(fee, privateKey);
-		String json = CallAPI.Post(fee, publicKey, sign);
+		String json = CallAPI.Post(fee, publicKey, "");
 		JSONObject obj = new JSONObject(json);
 		JSONObject data = obj.getJSONObject("data");
 		JSONArray fee = data.getJSONArray("sellfeepercent");
