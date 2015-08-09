@@ -149,12 +149,21 @@ public class TradeBot {
 		}
 		
 		//BackToStart
-		CurrencyPair BackToStartCurrencyPair = new CurrencyPair(EndCoin, StartCoin);
-		OrderBook BackToStartCurrencyOrderBook = MarketDataService.getOrderBook(BackToStartCurrencyPair);
+		CurrencyPair BackToStartCurrencyPair;
+		OrderBook BackToStartCurrencyOrderBook = null;
+		try{
+			BackToStartCurrencyPair = new CurrencyPair(EndCoin, StartCoin);
+			BackToStartCurrencyOrderBook = MarketDataService.getOrderBook(BackToStartCurrencyPair);
+
+		}
+		catch(Exception e){
+			BackToStartCurrencyPair = new CurrencyPair(StartCoin, EndCoin);
+			BackToStartCurrencyOrderBook = MarketDataService.getOrderBook(BackToStartCurrencyPair);
+		}
 		BackToStartCurrencyPairBuy = BackToStartCurrencyOrderBook.getAsks().get(0).getLimitPrice().doubleValue();//buys
 		BackToStartCurrencyPairSell = BackToStartCurrencyOrderBook.getBids().get(0).getLimitPrice().doubleValue();//sells
 		BackToStartCurrencyPairFee = getFees(BackToStartCurrencyPair);
-		if(StartCoin.equalsIgnoreCase(EndPair.baseSymbol)){
+		if(StartCoin.equalsIgnoreCase(BackToStartCurrencyPair.baseSymbol)){
 			BackToStartCurrencyPairAmount = (EndPurchaseAmount-(EndPurchaseAmount*BackToStartCurrencyPairFee))/BackToStartCurrencyPairBuy;	
 		}
 		else{
@@ -224,7 +233,7 @@ public class TradeBot {
 				baseCoin = pair.baseSymbol;
 				PairVolume = MarketDataService.getOrderBook(new CurrencyPair(baseCoin, "BTC"));
 				List<CryptsyMarketData> markets = ((CryptsyMarketDataServiceRaw) MarketDataService).getCryptsyMarkets().getReturnValue();//.get(1).get24hBTCVolume().doubleValue();
-				System.out.println(markets);
+				//System.out.println(markets);
 				for(CryptsyMarketData market: markets){
 					if(market.getPrimaryCurrencyCode().equalsIgnoreCase(pair.baseSymbol) && market.getSecondaryCurrencyCode().equalsIgnoreCase(pair.counterSymbol)){
 						VolumeInBTC = market.get24hBTCVolume().doubleValue();
