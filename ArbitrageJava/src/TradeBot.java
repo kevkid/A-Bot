@@ -5,6 +5,7 @@ import com.xeiam.xchange.currency.CurrencyPair;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.PublicKey;
+import java.text.DecimalFormat;
 import java.util.List;
 
 import com.xeiam.xchange.Exchange;
@@ -193,7 +194,7 @@ public class TradeBot {
 				toTrade = true;
 			
 		}
-		System.out.println("Route: " + StartPair + " -> " + EndPair + " -> " + BackToStartCurrencyPair + " -> " +  "Should I trade? " + toTrade + " Percent change: " + percentChange);
+		System.out.println("Route: " + StartPair + " -> " + EndPair + " -> " + BackToStartCurrencyPair + " -> " +  "Should I trade? " + toTrade + " Percent change: " + new DecimalFormat("##.####").format(percentChange) + "%");
 		    Thread.sleep(5000);//5sec
 
 		return toTrade;

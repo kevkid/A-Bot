@@ -43,9 +43,14 @@ public class main {
 		
 		try {
 			
-			//TradeBot cryptsyXPM_LTC = new TradeBot(ex, new CurrencyPair("XPM", "BTC"),new CurrencyPair("XPM", "LTC"),accountService,marketDataService,tradeService);
-			//TradeBot cryptsyUSD_LTC = new TradeBot(ex, new CurrencyPair("BTC", "USD"),new CurrencyPair("LTC", "USD"),accountService,marketDataService,tradeService);
+			TradeBot cryptsyXPM_LTC = new TradeBot(ex, new CurrencyPair("XPM", "BTC"),new CurrencyPair("XPM", "LTC"),accountService,marketDataService,tradeService);
+			Thread.sleep(2000);
+			TradeBot cryptsyUSD_LTC = new TradeBot(ex, new CurrencyPair("BTC", "USD"),new CurrencyPair("LTC", "USD"),accountService,marketDataService,tradeService);
+			Thread.sleep(2000);
 			TradeBot cryptsyDOGE_LTC = new TradeBot(ex, new CurrencyPair("DOGE", "BTC"),new CurrencyPair("DOGE", "LTC"),accountService,marketDataService,tradeService);
+			Thread.sleep(2000);
+			TradeBot cryptsyDOGE_BTC = new TradeBot(ex, new CurrencyPair("LTC", "BTC"),new CurrencyPair("DOGE", "BTC"),accountService,marketDataService,tradeService);
+			Thread.sleep(2000);
 		} catch (ExchangeException | NotAvailableFromExchangeException | NotYetImplementedForExchangeException
 				| IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
