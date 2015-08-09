@@ -127,10 +127,10 @@ public class TradeBot {
 		else{
 			StartCoin = StartPair.baseSymbol;
 			if(StartPair.counterSymbol.equals(EndPair.baseSymbol)){
-				EndCoin = EndPair.baseSymbol;
+				EndCoin = EndPair.counterSymbol;
 			}
 			else{
-				EndCoin = EndPair.counterSymbol;
+				EndCoin = EndPair.baseSymbol;
 			}
 			
 		}
@@ -187,10 +187,14 @@ public class TradeBot {
 		DirectPairFee = getFees(DirectPair.baseSymbol.toString());
 		DirectPurchaseAmount = (StartCoinBalance-(StartCoinBalance*StartPairFee))/DirectPairBuy;//how many coins I can buy with the amount of start coins.
 */		
+		double percentChange = ((BackToStartCurrencyPairAmount/StartCoinBalance)-1);
 		if( BackToStartCurrencyPairAmount > StartCoinBalance){
-			toTrade = true;
+			if(percentChange >= 0.01)
+				toTrade = true;
+			
 		}
-		    Thread.sleep(500);	    Thread.sleep(500);
+		System.out.println("Route: " + StartPair + " -> " + EndPair + " -> " + BackToStartCurrencyPair + " -> " +  "Should I trade? " + toTrade + " Percent change: " + percentChange);
+		    Thread.sleep(5000);//5sec
 
 		return toTrade;
 	}
