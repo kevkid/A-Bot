@@ -6,6 +6,7 @@ import java.sql.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.xeiam.xchange.bittrex.v1.*;
 import com.xeiam.xchange.cryptsy.*;
 import com.xeiam.xchange.exceptions.ExchangeException;
 import com.xeiam.xchange.exceptions.NotAvailableFromExchangeException;
@@ -18,7 +19,6 @@ import com.xeiam.xchange.ExchangeFactory;
 import com.xeiam.xchange.ExchangeSpecification;
 import com.xeiam.xchange.cryptsy.CryptsyExchange;
 import com.xeiam.xchange.currency.CurrencyPair;
-import com.xeiam.xchange.dto.MetaData;
 public class main {
 	public static void main(String [] arg){
 		/*String s = CallAPI.GetJson("https://api.cryptsy.com/api/v2/markets/");//market_currency_id":"1"
@@ -34,6 +34,14 @@ public class main {
 		}*/
 		
 		ExchangeSpecification ex_spec = new ExchangeSpecification(CryptsyExchange.class);
+		ExchangeSpecification ex_spec_Bittrex = new ExchangeSpecification(BittrexExchange.class);
+		ex_spec_Bittrex.setApiKey("");
+		ex_spec_Bittrex.setSecretKey("");
+		Exchange ex_bittreExchange = ExchangeFactory.INSTANCE.createExchange(ex_spec_Bittrex);
+		PollingAccountService accountServiceBittrex = ex_bittreExchange.getPollingAccountService();
+	    PollingMarketDataService marketDataServiceBittrex = ex_bittreExchange.getPollingMarketDataService();
+	    PollingTradeService tradeServiceBittrex = ex_bittreExchange.getPollingTradeService();
+		
 		ex_spec.setApiKey("");
 		ex_spec.setSecretKey("");//
 		Exchange ex = ExchangeFactory.INSTANCE.createExchange(ex_spec);
@@ -43,13 +51,14 @@ public class main {
 		
 		try {
 			
-			TradeBot cryptsyXPM_LTC = new TradeBot(ex, new CurrencyPair("XPM", "BTC"),new CurrencyPair("XPM", "LTC"),accountService,marketDataService,tradeService);
-			Thread.sleep(2000);
-			TradeBot cryptsyUSD_LTC = new TradeBot(ex, new CurrencyPair("BTC", "USD"),new CurrencyPair("LTC", "USD"),accountService,marketDataService,tradeService);
-			Thread.sleep(2000);
-			TradeBot cryptsyDOGE_LTC = new TradeBot(ex, new CurrencyPair("DOGE", "BTC"),new CurrencyPair("DOGE", "LTC"),accountService,marketDataService,tradeService);
-			Thread.sleep(2000);
-			TradeBot cryptsyDOGE_BTC = new TradeBot(ex, new CurrencyPair("LTC", "BTC"),new CurrencyPair("DOGE", "BTC"),accountService,marketDataService,tradeService);
+			//TradeBot cryptsyXPM_LTC = new TradeBot(ex, new CurrencyPair("XPM", "BTC"),new CurrencyPair("XPM", "LTC"),accountService,marketDataService,tradeService);
+			//Thread.sleep(2000);
+			//TradeBot cryptsyUSD_LTC = new TradeBot(ex, new CurrencyPair("BTC", "USD"),new CurrencyPair("LTC", "USD"),accountService,marketDataService,tradeService);
+			//Thread.sleep(2000);
+			//TradeBot cryptsyDOGE_LTC = new TradeBot(ex, new CurrencyPair("DOGE", "BTC"),new CurrencyPair("DOGE", "LTC"),accountService,marketDataService,tradeService);
+			//Thread.sleep(2000);
+			//TradeBot cryptsyDOGE_BTC = new TradeBot(ex, new CurrencyPair("CNC", "BTC"),new CurrencyPair("CNC", "LTC"),accountService,marketDataService,tradeService);
+			TradeBot cryptsyDOGE_BTC = new TradeBot(ex_bittreExchange, new CurrencyPair("DOGE", "BTC"),new CurrencyPair("CNC", "LTC"),accountServiceBittrex,marketDataServiceBittrex,tradeServiceBittrex);
 			Thread.sleep(2000);
 		} catch (ExchangeException | NotAvailableFromExchangeException | NotYetImplementedForExchangeException
 				| IOException | InterruptedException e) {

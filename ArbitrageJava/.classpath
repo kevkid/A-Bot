@@ -4,8 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="lib" path="Reference/json.jar"/>
 	<classpathentry kind="lib" path="Reference/sqlite-jdbc-3.8.11.1.jar"/>
-	<classpathentry kind="lib" path="Reference/xchange-cryptsy-3.0.0.jar"/>
-	<classpathentry kind="lib" path="Reference/xchange-core-3.0.0.jar"/>
 	<classpathentry kind="lib" path="Reference/slf4j-api-1.7.12.jar"/>
 	<classpathentry kind="lib" path="Reference/slf4j-simple-1.7.12.jar"/>
 	<classpathentry kind="lib" path="Reference/rescu-1.8.1.jar"/>
@@ -14,5 +12,9 @@
 	<classpathentry kind="lib" path="Reference/jackson-annotations-2.6.0.jar"/>
 	<classpathentry kind="lib" path="Reference/jsr305.jar"/>
 	<classpathentry kind="lib" path="Reference/jsr311-api-1.1.1.jar"/>
+	<classpathentry kind="lib" path="Reference/xchange-bittrex-3.1.0.jar"/>
+	<classpathentry kind="lib" path="Reference/xchange-core-3.1.0.jar"/>
+	<classpathentry kind="lib" path="Reference/xchange-cryptsy-3.1.0.jar"/>
+	<classpathentry kind="lib" path="Reference/commons-io-2.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
