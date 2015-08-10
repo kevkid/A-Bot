@@ -135,8 +135,8 @@ public class TradeBot {
 			}
 			
 		}
-		
-		StartCoinBalance = AccountService.getAccountInfo().getBalance(StartCoin).doubleValue();
+		//AccountService.getAccountInfo().getBalance(StartCoin).doubleValue()
+		StartCoinBalance = 1;
 		OrderBook StartPairOrderBook = MarketDataService.getOrderBook(StartPair);
 		StartPairBuy = (StartPairOrderBook.getAsks().get(0).getLimitPrice()).doubleValue();//buys
 		StartPairSell = (StartPairOrderBook.getBids().get(0).getLimitPrice()).doubleValue();//sells
@@ -164,7 +164,7 @@ public class TradeBot {
 		CurrencyPair BackToStartCurrencyPair;
 		OrderBook BackToStartCurrencyOrderBook = null;
 		try{
-			BackToStartCurrencyPair = new CurrencyPair(EndCoin, StartCoin);
+ 			BackToStartCurrencyPair = new CurrencyPair(EndCoin, StartCoin);
 			BackToStartCurrencyOrderBook = MarketDataService.getOrderBook(BackToStartCurrencyPair);
 
 		}
@@ -181,14 +181,14 @@ public class TradeBot {
 		else{
 			BackToStartCurrencyPairAmount = (EndPurchaseAmount-(EndPurchaseAmount*BackToStartCurrencyPairFee))*BackToStartCurrencyPairSell;	
 		}
-		
+		System.out.println(BackToStartCurrencyPairAmount);
 		/*OrderBook DirectPairOrderBook = MarketDataService.getOrderBook(DirectPair);
 		DirectPairBuy =  DirectPairOrderBook.getAsks().get(0).getLimitPrice().doubleValue();
 		DirectPairSell = DirectPairOrderBook.getBids().get(0).getLimitPrice().doubleValue();
 		DirectPairFee = getFees(DirectPair.baseSymbol.toString());
 		DirectPurchaseAmount = (StartCoinBalance-(StartCoinBalance*StartPairFee))/DirectPairBuy;//how many coins I can buy with the amount of start coins.
 */		
-		double percentChange = ((BackToStartCurrencyPairAmount/StartCoinBalance)-1);
+		double percentChange = (((BackToStartCurrencyPairAmount-StartCoinBalance)/StartCoinBalance)*100);
 		if( BackToStartCurrencyPairAmount > StartCoinBalance){
 			if(percentChange >= 0.01)
 				toTrade = true;
