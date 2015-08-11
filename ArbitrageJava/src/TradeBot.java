@@ -202,6 +202,7 @@ public class TradeBot {
 		double EX1_PairBuy, EX1_PairSell, EX1_PairFee, EX2_PairBuy, EX2_PairSell, EX2_PairFee;
 		String StartCoin = pair.counterSymbol, EndCoin = pair.baseSymbol;
 		
+		
 		Double EX1_CoinBalance = EX1_accountService.getAccountInfo().getWallet(StartCoin).getAvailable().doubleValue();
 		OrderBook EX1_OrderBook = EX1_marketDataService.getOrderBook(pair);
 		EX1_PairBuy = (EX1_OrderBook.getAsks().get(0).getLimitPrice()).doubleValue();//buys
