@@ -51,7 +51,7 @@ public class TradeBot {
 		exchange2 = Exchange2;
 		Thread t = new Thread(){
 			public void run() {
-				while(true){
+				//while(true){
 					try {
 						if(checkMarketDifferentExchanges(pair, EX1_accountService, EX1_marketDataService, EX1_tradeService, EX2_accountService, EX2_marketDataService, EX2_tradeService)){//while checking the market there is an opportunity to trade send signal
 							//Send signal here
@@ -63,7 +63,7 @@ public class TradeBot {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-				}
+				//}
 			}
 		};
 		t.start();
@@ -177,7 +177,7 @@ public class TradeBot {
 		else{
 			BackToStartCurrencyPairAmount = (EndPurchaseAmount-(EndPurchaseAmount*BackToStartCurrencyPairFee))*BackToStartCurrencyPairSell;	
 		}
-		System.out.println(BackToStartCurrencyPairAmount);
+		//System.out.println(BackToStartCurrencyPairAmount);
 		/*OrderBook DirectPairOrderBook = MarketDataService.getOrderBook(DirectPair);
 		DirectPairBuy =  DirectPairOrderBook.getAsks().get(0).getLimitPrice().doubleValue();
 		DirectPairSell = DirectPairOrderBook.getBids().get(0).getLimitPrice().doubleValue();
@@ -244,9 +244,7 @@ public class TradeBot {
 			if(percentChange >= 1){
 				toTrade = true;
 			}
-			
-		
-		System.out.println("Pair: " + pair + " Route: " + exchange1.getExchangeSpecification().getExchangeName() + " -> " + exchange2.getExchangeSpecification().getExchangeName() + " Should I trade? " + toTrade + " Percent change: " + new DecimalFormat("##.####").format(percentChange) + "%");
+			System.out.println("Pair: " + pair + " Route: " + exchange1.getExchangeSpecification().getExchangeName() + " -> " + exchange2.getExchangeSpecification().getExchangeName() + " Should I trade? " + toTrade + " Percent change: " + new DecimalFormat("##.####").format(percentChange) + "%");		
 		    Thread.sleep(5000);//5sec
 
 		return toTrade;
@@ -332,7 +330,7 @@ public class TradeBot {
 	
 	public CurrencyPair checkCurrencyPair(CurrencyPair pair, PollingMarketDataService marketDataService) throws ExchangeException, NotAvailableFromExchangeException, NotYetImplementedForExchangeException, IOException{
 		try{
-			marketDataService.getOrderBook(pair);
+			OrderBook o = marketDataService.getOrderBook(pair);
 			return pair;
 		}
 		catch(Exception e){

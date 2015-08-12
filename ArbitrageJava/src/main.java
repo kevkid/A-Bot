@@ -72,7 +72,7 @@ public class main {
 	    
 		try {
 			
-			//TradeBot cryptsyXPM_LTC = new TradeBot(ex, new CurrencyPair("XPM", "BTC"),new CurrencyPair("XPM", "LTC"),accountService,marketDataService,tradeService);
+			//TradeBot cryptsyXPM_LTC = new TradeBot(ex_Cryptsy, new CurrencyPair("CNC", "BTC"),new CurrencyPair("CNC", "LTC"),accountService_Cryptsy,marketDataService_Cryptsy,tradeService_Cryptsy);
 			//Thread.sleep(2000);
 			//TradeBot cryptsyUSD_LTC = new TradeBot(ex, new CurrencyPair("BTC", "USD"),new CurrencyPair("LTC", "USD"),accountService,marketDataService,tradeService);
 			//Thread.sleep(2000);
@@ -80,21 +80,23 @@ public class main {
 			//Thread.sleep(2000);
 			//TradeBot cryptsyDOGE_BTC = new TradeBot(ex, new CurrencyPair("CNC", "BTC"),new CurrencyPair("CNC", "LTC"),accountService,marketDataService,tradeService);
 			//TradeBot cryptsyDOGE_BTC = new TradeBot(ex_bittreExchange, new CurrencyPair("DOGE", "BTC"),new CurrencyPair("DOGE", "LTC"),accountServiceBittrex,marketDataServiceBittrex,tradeServiceBittrex);
-			//TradeBot CryBitBot = new TradeBot(ex_Cryptsy, ex_BittreExchange, new CurrencyPair("STR", "BTC"), accountService_Cryptsy, marketDataService_Cryptsy, tradeService_Cryptsy, accountServiceBittrex, marketDataServiceBittrex, tradeServiceBittrex );
+			//TradeBot CryBitBot = new TradeBot(ex_Cryptsy, ex_BittreExchange, new CurrencyPair("SLG", "BTC"), accountService_Cryptsy, marketDataService_Cryptsy, tradeService_Cryptsy, accountServiceBittrex, marketDataServiceBittrex, tradeServiceBittrex );
 			
 			//TradeBot CryKrakBot = new TradeBot(ex_Cryptsy, krakenExchange, new CurrencyPair("LTC", "BTC"), accountService_Cryptsy, marketDataService_Cryptsy, tradeService_Cryptsy, accountService_kraken, marketDataService_kraken, tradeService_kraken );
 			//TradeBot KrakCryBot = new TradeBot(krakenExchange, ex_Cryptsy,  new CurrencyPair("LTC", "BTC"),  accountService_kraken, marketDataService_kraken, tradeService_kraken, accountService_Cryptsy, marketDataService_Cryptsy, tradeService_Cryptsy);
 			//TradeBot CryBTCEBot = new TradeBot(ex_Cryptsy, ex_btce, new CurrencyPair("BTC", "USD"), accountService_Cryptsy, marketDataService_Cryptsy, tradeService_Cryptsy, accountService_btce, marketDataService_btce, tradeService_btce );
 			//TradeBot BTCECryBot = new TradeBot(ex_btce, ex_Cryptsy,  new CurrencyPair("BTC", "USD"), accountService_btce, marketDataService_btce, tradeService_btce, accountService_Cryptsy, marketDataService_Cryptsy, tradeService_Cryptsy);
-			TradeBot BTCEKrakBot = new TradeBot(ex_btce, ex_Cryptsy,  new CurrencyPair("BTC", "USD"), accountService_btce, marketDataService_btce, tradeService_btce, accountService_kraken, marketDataService_kraken, tradeService_kraken);
-			/*List<CurrencyPair> BittrexMarkets = ((BittrexMarketDataServiceRaw) marketDataServiceBittrex).getExchangeSymbols();
+			//TradeBot BTCEKrakBot = new TradeBot(ex_btce, krakenExchange,  new CurrencyPair("BTC", "USD"), accountService_btce, marketDataService_btce, tradeService_btce, accountService_kraken, marketDataService_kraken, tradeService_kraken);
+			//Thread.sleep(5000);
+			List<CurrencyPair> BittrexMarkets = ((BittrexMarketDataServiceRaw) marketDataServiceBittrex).getExchangeSymbols();
 			List<CurrencyPair> CryptsyMarkets = ((CryptsyMarketDataServiceRaw) marketDataService_Cryptsy).getExchangeSymbols();
 			HashSet<CurrencyPair> allMarkets = new HashSet<CurrencyPair>(BittrexMarkets);
 			allMarkets.retainAll(CryptsyMarkets);
 			for(CurrencyPair market : allMarkets){
 				new TradeBot(ex_Cryptsy, ex_BittreExchange, market, accountService_Cryptsy, marketDataService_Cryptsy, tradeService_Cryptsy, accountServiceBittrex, marketDataServiceBittrex, tradeServiceBittrex );
+				new TradeBot(ex_BittreExchange,ex_Cryptsy,  market, accountServiceBittrex, marketDataServiceBittrex, tradeServiceBittrex, accountService_Cryptsy, marketDataService_Cryptsy, tradeService_Cryptsy);
 				Thread.sleep(5000);
-			}*/
+			}
 		} catch (ExchangeException | NotAvailableFromExchangeException | NotYetImplementedForExchangeException
 				| IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
