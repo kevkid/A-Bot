@@ -1,5 +1,6 @@
 import com.xeiam.xchange.cryptsy.*;
 import com.xeiam.xchange.cryptsy.dto.CryptsyOrder.CryptsyOrderType;
+import com.xeiam.xchange.currency.Currencies;
 import com.xeiam.xchange.currency.CurrencyPair;
 
 import java.io.IOException;
@@ -203,23 +204,35 @@ public class TradeBot {
 		String StartCoin = pair.counterSymbol, EndCoin = pair.baseSymbol;
 		
 		
-		Double EX1_CoinBalance = EX1_accountService.getAccountInfo().getWallet(StartCoin).getAvailable().doubleValue();
-		OrderBook EX1_OrderBook = EX1_marketDataService.getOrderBook(pair);
+		Double EX1_CoinBalance =1.0;// EX1_accountService.getAccountInfo().getWallet(StartCoin).getAvailable().doubleValue();
+		
+		OrderBook EX1_OrderBook = EX1_marketDataService.getOrderBook(checkCurrencyPair(pair,EX1_marketDataService));
 		EX1_PairBuy = (EX1_OrderBook.getAsks().get(0).getLimitPrice()).doubleValue();//buys
 		EX1_PairSell = (EX1_OrderBook.getBids().get(0).getLimitPrice()).doubleValue();//sells
 		
-		EX1_PairFee = checkExchangeFee(exchange1, pair);//getFees(StartPair);//getFee
+		EX1_PairFee = checkExchangeFee(exchange1, checkCurrencyPair(pair,EX1_marketDataService));//getFees(StartPair);//getFee
+		if(exchange1.getExchangeSpecification().getExchangeName().equalsIgnoreCase("Kraken") && pair.baseSymbol.equals("LTC") && pair.counterSymbol.equals("BTC")){
+			EX1_PairBuy = 1/EX1_PairBuy;
+			EX1_PairSell = 1/EX1_PairSell;
+		}
 		if(StartCoin.equalsIgnoreCase(pair.counterSymbol)){
 			EX1_PurchaseAmount = (EX1_CoinBalance-(EX1_CoinBalance*EX1_PairFee))/EX1_PairBuy;//how many coins I can buy with the amount of start coins.
 		}
 		else{
 			EX1_PurchaseAmount = (StartCoinBalance-(StartCoinBalance*EX1_PairFee))*EX1_PairSell;//how many coins I can buy with the amount of start coins.
 		}
-
-		OrderBook EX2_PairOrderBook = EX2_marketDataService.getOrderBook(pair);
+		
+		OrderBook EX2_PairOrderBook = EX2_marketDataService.getOrderBook(checkCurrencyPair(pair,EX2_marketDataService));
 		EX2_PairBuy = EX2_PairOrderBook.getAsks().get(0).getLimitPrice().doubleValue();//buys
 		EX2_PairSell = EX2_PairOrderBook.getBids().get(0).getLimitPrice().doubleValue();//sells
-		EX2_PairFee = checkExchangeFee(exchange2, pair);//getFees(EndPair);
+		EX2_PairFee = checkExchangeFee(exchange2, checkCurrencyPair(pair,EX1_marketDataService));//getFees(EndPair);
+		if(exchange2.getExchangeSpecification().getExchangeName().equalsIgnoreCase("Kraken") && pair.baseSymbol.equals("LTC") && pair.counterSymbol.equals("BTC")){
+			EX2_PairBuy = 1/EX2_PairBuy;
+			EX2_PairSell = 1/EX2_PairSell;
+		}
+		else{
+			//System.out.println(exchange2.getExchangeSpecification().getExchangeName());
+		}
 		if(EndCoin.equalsIgnoreCase(pair.counterSymbol)){
 			EX2_PurchaseAmount = (EX1_PurchaseAmount-(EX1_PurchaseAmount*EX2_PairFee))/EX2_PairBuy;
 
@@ -227,41 +240,6 @@ public class TradeBot {
 		else{
 			EX2_PurchaseAmount = (EX1_PurchaseAmount-(EX1_PurchaseAmount*EX2_PairFee))*EX2_PairSell;	
 		}
-		/*
-		//BackToStart
-		CurrencyPair BackToStartCurrencyPair;
-		OrderBook BackToStartCurrencyOrderBook = null;
-		try{
- 			BackToStartCurrencyPair = new CurrencyPair(EndCoin, StartCoin);
-			BackToStartCurrencyOrderBook = MarketDataService.getOrderBook(BackToStartCurrencyPair);
-
-		}
-		catch(Exception e){
-			BackToStartCurrencyPair = new CurrencyPair(StartCoin, EndCoin);
-			BackToStartCurrencyOrderBook = MarketDataService.getOrderBook(BackToStartCurrencyPair);
-		}
-		BackToStartCurrencyPairBuy = BackToStartCurrencyOrderBook.getAsks().get(0).getLimitPrice().doubleValue();//buys
-		BackToStartCurrencyPairSell = BackToStartCurrencyOrderBook.getBids().get(0).getLimitPrice().doubleValue();//sells
-		BackToStartCurrencyPairFee = checkExchangeFee(exchange1, BackToStartCurrencyPair);//getFees(BackToStartCurrencyPair);
-		if(StartCoin.equalsIgnoreCase(BackToStartCurrencyPair.baseSymbol)){
-			BackToStartCurrencyPairAmount = (EndPurchaseAmount-(EndPurchaseAmount*BackToStartCurrencyPairFee))/BackToStartCurrencyPairBuy;	
-		}
-		else{
-			BackToStartCurrencyPairAmount = (EndPurchaseAmount-(EndPurchaseAmount*BackToStartCurrencyPairFee))*BackToStartCurrencyPairSell;	
-		}
-		System.out.println(BackToStartCurrencyPairAmount);
-		OrderBook DirectPairOrderBook = MarketDataService.getOrderBook(DirectPair);
-		DirectPairBuy =  DirectPairOrderBook.getAsks().get(0).getLimitPrice().doubleValue();
-		DirectPairSell = DirectPairOrderBook.getBids().get(0).getLimitPrice().doubleValue();
-		DirectPairFee = getFees(DirectPair.baseSymbol.toString());
-		DirectPurchaseAmount = (StartCoinBalance-(StartCoinBalance*StartPairFee))/DirectPairBuy;//how many coins I can buy with the amount of start coins.
-		
-		double percentChange = (((BackToStartCurrencyPairAmount-StartCoinBalance)/StartCoinBalance)*100);
-		if( BackToStartCurrencyPairAmount > StartCoinBalance){
-			if(percentChange >= 1)
-				toTrade = true;
-			
-		}*/
 		double percentChange = (((EX2_PurchaseAmount-EX1_CoinBalance)/EX1_CoinBalance)*100);
 			if(percentChange >= 1){
 				toTrade = true;
@@ -350,5 +328,15 @@ public class TradeBot {
 		}
 		return 0.0;
 		
+	}
+	
+	public CurrencyPair checkCurrencyPair(CurrencyPair pair, PollingMarketDataService marketDataService) throws ExchangeException, NotAvailableFromExchangeException, NotYetImplementedForExchangeException, IOException{
+		try{
+			marketDataService.getOrderBook(pair);
+			return pair;
+		}
+		catch(Exception e){
+			return new CurrencyPair(pair.counterSymbol, pair.baseSymbol);
+		}
 	}
 }
