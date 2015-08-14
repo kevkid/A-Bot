@@ -6,6 +6,7 @@ import com.xeiam.xchange.bittrex.v1.*;
 import com.xeiam.xchange.bittrex.v1.service.polling.BittrexMarketDataServiceRaw;
 import com.xeiam.xchange.btce.v3.BTCE;
 import com.xeiam.xchange.btce.v3.BTCEExchange;
+import com.xeiam.xchange.btce.v3.service.polling.BTCEMarketDataServiceRaw;
 import com.xeiam.xchange.exceptions.ExchangeException;
 import com.xeiam.xchange.exceptions.NotAvailableFromExchangeException;
 import com.xeiam.xchange.exceptions.NotYetImplementedForExchangeException;
@@ -20,6 +21,7 @@ import com.xeiam.xchange.cryptsy.CryptsyExchange;
 import com.xeiam.xchange.cryptsy.service.polling.CryptsyMarketDataServiceRaw;
 import com.xeiam.xchange.currency.CurrencyPair;
 import com.xeiam.xchange.kraken.KrakenExchange;
+import com.xeiam.xchange.kraken.service.polling.KrakenMarketDataServiceRaw;
 import com.xeiam.xchange.btce.*;
 import com.xeiam.xchange.BaseExchange;
 public class main {
@@ -36,7 +38,7 @@ public class main {
 			" Values (1, " + Market_Currency + ", '" + label + "', '" + Orderbook_Buy_URL + "', '" + Orderbook_Sell_URL + "');" );	
 		}*/
 		
-		ExchangeSpecification ex_spec = new ExchangeSpecification(CryptsyExchange.class);
+		ExchangeSpecification ex_spec_Cryptsy = new ExchangeSpecification(CryptsyExchange.class);
 		ExchangeSpecification ex_spec_Bittrex = new ExchangeSpecification(BittrexExchange.class);
 		ExchangeSpecification ex_spec_kraken = new ExchangeSpecification(KrakenExchange.class);
 		ExchangeSpecification ex_spec_btce = new ExchangeSpecification(BTCEExchange.class);
@@ -47,9 +49,9 @@ public class main {
 	    PollingMarketDataService marketDataServiceBittrex = ex_BittreExchange.getPollingMarketDataService();
 	    PollingTradeService tradeServiceBittrex = ex_BittreExchange.getPollingTradeService();
 
-		ex_spec.setApiKey("");
-		ex_spec.setSecretKey("");//
-		Exchange ex_Cryptsy = ExchangeFactory.INSTANCE.createExchange(ex_spec);
+		ex_spec_Cryptsy.setApiKey("");
+		ex_spec_Cryptsy.setSecretKey("");//
+		Exchange ex_Cryptsy = ExchangeFactory.INSTANCE.createExchange(ex_spec_Cryptsy);
 		PollingAccountService accountService_Cryptsy = ex_Cryptsy.getPollingAccountService();
 	    PollingMarketDataService marketDataService_Cryptsy = ex_Cryptsy.getPollingMarketDataService();
 	    PollingTradeService tradeService_Cryptsy = ex_Cryptsy.getPollingTradeService();
@@ -80,23 +82,14 @@ public class main {
 			//Thread.sleep(2000);
 			//TradeBot cryptsyDOGE_BTC = new TradeBot(ex, new CurrencyPair("CNC", "BTC"),new CurrencyPair("CNC", "LTC"),accountService,marketDataService,tradeService);
 			//TradeBot cryptsyDOGE_BTC = new TradeBot(ex_bittreExchange, new CurrencyPair("DOGE", "BTC"),new CurrencyPair("DOGE", "LTC"),accountServiceBittrex,marketDataServiceBittrex,tradeServiceBittrex);
-			//TradeBot CryBitBot = new TradeBot(ex_Cryptsy, ex_BittreExchange, new CurrencyPair("SLG", "BTC"), accountService_Cryptsy, marketDataService_Cryptsy, tradeService_Cryptsy, accountServiceBittrex, marketDataServiceBittrex, tradeServiceBittrex );
+			//TradeBot CryBitBot = new TradeBot(ex_Cryptsy, ex_BittreExchange, new CurrencyPair("LTC", "BTC"), accountService_Cryptsy, marketDataService_Cryptsy, tradeService_Cryptsy, accountServiceBittrex, marketDataServiceBittrex, tradeServiceBittrex );
 			
 			//TradeBot CryKrakBot = new TradeBot(ex_Cryptsy, krakenExchange, new CurrencyPair("LTC", "BTC"), accountService_Cryptsy, marketDataService_Cryptsy, tradeService_Cryptsy, accountService_kraken, marketDataService_kraken, tradeService_kraken );
 			//TradeBot KrakCryBot = new TradeBot(krakenExchange, ex_Cryptsy,  new CurrencyPair("LTC", "BTC"),  accountService_kraken, marketDataService_kraken, tradeService_kraken, accountService_Cryptsy, marketDataService_Cryptsy, tradeService_Cryptsy);
 			//TradeBot CryBTCEBot = new TradeBot(ex_Cryptsy, ex_btce, new CurrencyPair("BTC", "USD"), accountService_Cryptsy, marketDataService_Cryptsy, tradeService_Cryptsy, accountService_btce, marketDataService_btce, tradeService_btce );
-			//TradeBot BTCECryBot = new TradeBot(ex_btce, ex_Cryptsy,  new CurrencyPair("BTC", "USD"), accountService_btce, marketDataService_btce, tradeService_btce, accountService_Cryptsy, marketDataService_Cryptsy, tradeService_Cryptsy);
+			TradeBot BTCECryBot = new TradeBot(ex_btce, ex_Cryptsy,  new CurrencyPair("LTC", "BTC"), accountService_btce, marketDataService_btce, tradeService_btce, accountService_Cryptsy, marketDataService_Cryptsy, tradeService_Cryptsy);
 			//TradeBot BTCEKrakBot = new TradeBot(ex_btce, krakenExchange,  new CurrencyPair("BTC", "USD"), accountService_btce, marketDataService_btce, tradeService_btce, accountService_kraken, marketDataService_kraken, tradeService_kraken);
 			//Thread.sleep(5000);
-			List<CurrencyPair> BittrexMarkets = ((BittrexMarketDataServiceRaw) marketDataServiceBittrex).getExchangeSymbols();
-			List<CurrencyPair> CryptsyMarkets = ((CryptsyMarketDataServiceRaw) marketDataService_Cryptsy).getExchangeSymbols();
-			HashSet<CurrencyPair> allMarkets = new HashSet<CurrencyPair>(BittrexMarkets);
-			allMarkets.retainAll(CryptsyMarkets);
-			for(CurrencyPair market : allMarkets){
-				new TradeBot(ex_Cryptsy, ex_BittreExchange, market, accountService_Cryptsy, marketDataService_Cryptsy, tradeService_Cryptsy, accountServiceBittrex, marketDataServiceBittrex, tradeServiceBittrex );
-				new TradeBot(ex_BittreExchange,ex_Cryptsy,  market, accountServiceBittrex, marketDataServiceBittrex, tradeServiceBittrex, accountService_Cryptsy, marketDataService_Cryptsy, tradeService_Cryptsy);
-				Thread.sleep(5000);
-			}
 		} catch (ExchangeException | NotAvailableFromExchangeException | NotYetImplementedForExchangeException
 				| IOException | InterruptedException e) {
 			// TODO Auto-generated catch block

@@ -7,16 +7,23 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.PublicKey;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
 import com.xeiam.xchange.ExchangeSpecification;
+import com.xeiam.xchange.bittrex.v1.dto.marketdata.BittrexTicker;
+import com.xeiam.xchange.bittrex.v1.service.polling.BittrexMarketDataServiceRaw;
+import com.xeiam.xchange.btce.v3.dto.marketdata.BTCETicker;
+import com.xeiam.xchange.btce.v3.dto.meta.BTCEMetaData;
+import com.xeiam.xchange.btce.v3.service.polling.BTCEMarketDataServiceRaw;
 import com.xeiam.xchange.dto.marketdata.*;
 import com.xeiam.xchange.dto.trade.*;
 import com.xeiam.xchange.exceptions.ExchangeException;
 import com.xeiam.xchange.exceptions.NotAvailableFromExchangeException;
 import com.xeiam.xchange.exceptions.NotYetImplementedForExchangeException;
+import com.xeiam.xchange.kraken.service.polling.KrakenMarketDataServiceRaw;
 import com.xeiam.xchange.service.polling.account.PollingAccountService;
 import com.xeiam.xchange.service.polling.marketdata.PollingMarketDataService;
 import com.xeiam.xchange.service.polling.trade.PollingTradeService;
@@ -51,19 +58,19 @@ public class TradeBot {
 		exchange2 = Exchange2;
 		Thread t = new Thread(){
 			public void run() {
-				//while(true){
+				while(true){
 					try {
 						if(checkMarketDifferentExchanges(pair, EX1_accountService, EX1_marketDataService, EX1_tradeService, EX2_accountService, EX2_marketDataService, EX2_tradeService)){//while checking the market there is an opportunity to trade send signal
 							//Send signal here
-							System.out.println("Trade Signal Sent");
-							Thread.sleep(5000);
+							//System.out.println("Trade Signal Sent");
+							Thread.sleep(2000);
 						}
 					} catch (ExchangeException | NotAvailableFromExchangeException
 							| NotYetImplementedForExchangeException | InterruptedException | IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-				//}
+				}
 			}
 		};
 		t.start();
@@ -148,6 +155,7 @@ public class TradeBot {
 		EndPairBuy = EndPairOrderBook.getAsks().get(0).getLimitPrice().doubleValue();//buys
 		EndPairSell = EndPairOrderBook.getBids().get(0).getLimitPrice().doubleValue();//sells
 		EndPairFee = checkExchangeFee(exchange1, EndPair);//getFees(EndPair);
+		
 		if(EndCoin.equalsIgnoreCase(EndPair.baseSymbol)){
 			EndPurchaseAmount = (StartPurchaseAmount-(StartPurchaseAmount*EndPairFee))/EndPairBuy;
 
@@ -188,9 +196,8 @@ public class TradeBot {
 		if( BackToStartCurrencyPairAmount > StartCoinBalance){
 			if(percentChange >= 1)
 				toTrade = true;
-			
+			System.out.println("Route: " + StartPair + " -> " + EndPair + " -> " + BackToStartCurrencyPair + " -> " +  "Should I trade? " + toTrade + " Percent change: " + new DecimalFormat("##.####").format(percentChange) + "%");	
 		}
-		System.out.println("Route: " + StartPair + " -> " + EndPair + " -> " + BackToStartCurrencyPair + " -> " +  "Should I trade? " + toTrade + " Percent change: " + new DecimalFormat("##.####").format(percentChange) + "%");
 		    Thread.sleep(5000);//5sec
 
 		return toTrade;
@@ -199,7 +206,7 @@ public class TradeBot {
 	public boolean checkMarketDifferentExchanges(CurrencyPair pair, PollingAccountService EX1_accountService, PollingMarketDataService EX1_marketDataService, PollingTradeService EX1_tradeService, PollingAccountService EX2_accountService, PollingMarketDataService EX2_marketDataService, PollingTradeService EX2_tradeService) throws ExchangeException, NotAvailableFromExchangeException, NotYetImplementedForExchangeException, IOException, InterruptedException{
 		boolean toTrade = false;
 		double StartPairFee, EndPairFee, DirectPairFee, BackToStartCurrencyPairFee;//all in percent
-		double EX1_PurchaseAmount, EX2_PurchaseAmount;
+		double EX1_PurchaseAmount, EX2_PurchaseAmount, EX1_Volume, EX2_Volume;
 		double EX1_PairBuy, EX1_PairSell, EX1_PairFee, EX2_PairBuy, EX2_PairSell, EX2_PairFee;
 		String StartCoin = pair.counterSymbol, EndCoin = pair.baseSymbol;
 		
@@ -209,8 +216,9 @@ public class TradeBot {
 		OrderBook EX1_OrderBook = EX1_marketDataService.getOrderBook(checkCurrencyPair(pair,EX1_marketDataService));
 		EX1_PairBuy = (EX1_OrderBook.getAsks().get(0).getLimitPrice()).doubleValue();//buys
 		EX1_PairSell = (EX1_OrderBook.getBids().get(0).getLimitPrice()).doubleValue();//sells
-		
+		EX1_Volume = checkMarketVolume(checkCurrencyPair(pair,EX1_marketDataService),exchange1);
 		EX1_PairFee = checkExchangeFee(exchange1, checkCurrencyPair(pair,EX1_marketDataService));//getFees(StartPair);//getFee
+		//EX1_Volume = checkMarketVolume(checkCurrencyPair(pair,EX1_marketDataService),exchange1);
 		if(exchange1.getExchangeSpecification().getExchangeName().equalsIgnoreCase("Kraken") && pair.baseSymbol.equals("LTC") && pair.counterSymbol.equals("BTC")){
 			EX1_PairBuy = 1/EX1_PairBuy;
 			EX1_PairSell = 1/EX1_PairSell;
@@ -221,11 +229,11 @@ public class TradeBot {
 		else{
 			EX1_PurchaseAmount = (StartCoinBalance-(StartCoinBalance*EX1_PairFee))*EX1_PairSell;//how many coins I can buy with the amount of start coins.
 		}
-		
 		OrderBook EX2_PairOrderBook = EX2_marketDataService.getOrderBook(checkCurrencyPair(pair,EX2_marketDataService));
 		EX2_PairBuy = EX2_PairOrderBook.getAsks().get(0).getLimitPrice().doubleValue();//buys
 		EX2_PairSell = EX2_PairOrderBook.getBids().get(0).getLimitPrice().doubleValue();//sells
 		EX2_PairFee = checkExchangeFee(exchange2, checkCurrencyPair(pair,EX1_marketDataService));//getFees(EndPair);
+		EX2_Volume = checkMarketVolume(checkCurrencyPair(pair,EX2_marketDataService),exchange2);
 		if(exchange2.getExchangeSpecification().getExchangeName().equalsIgnoreCase("Kraken") && pair.baseSymbol.equals("LTC") && pair.counterSymbol.equals("BTC")){
 			EX2_PairBuy = 1/EX2_PairBuy;
 			EX2_PairSell = 1/EX2_PairSell;
@@ -243,10 +251,8 @@ public class TradeBot {
 		double percentChange = (((EX2_PurchaseAmount-EX1_CoinBalance)/EX1_CoinBalance)*100);
 			if(percentChange >= 1){
 				toTrade = true;
+				System.out.println("Pair: " + pair + " Route: " + exchange1.getExchangeSpecification().getExchangeName() + " -> " + exchange2.getExchangeSpecification().getExchangeName() + " Should I trade? " + toTrade + " Percent change: " + new DecimalFormat("##.####").format(percentChange) + "%");
 			}
-			System.out.println("Pair: " + pair + " Route: " + exchange1.getExchangeSpecification().getExchangeName() + " -> " + exchange2.getExchangeSpecification().getExchangeName() + " Should I trade? " + toTrade + " Percent change: " + new DecimalFormat("##.####").format(percentChange) + "%");		
-		    Thread.sleep(5000);//5sec
-
 		return toTrade;
 	}
 
@@ -326,6 +332,36 @@ public class TradeBot {
 		}
 		return 0.0;
 		
+	}
+	
+	public double checkMarketVolume(CurrencyPair pair, Exchange exchange) throws ExchangeException, IOException{
+		switch(exchange.getExchangeSpecification().getExchangeName().toString()){
+			case "Cryptsy":
+				List<CryptsyMarketData> markets_cryptsy = ((CryptsyMarketDataServiceRaw) exchange.getPollingMarketDataService()).getCryptsyMarkets().getReturnValue();
+				for(CryptsyMarketData market: markets_cryptsy){
+					if(market.getPrimaryCurrencyCode().equals(pair.baseSymbol) && market.getSecondaryCurrencyCode().equals(pair.counterSymbol)){
+						return market.get24hBTCVolume().doubleValue();
+					}
+				}
+				break;
+			case "Bittrex":
+				
+				ArrayList<BittrexTicker> market_bittrex = ((BittrexMarketDataServiceRaw) exchange.getPollingMarketDataService()).getBittrexTickers();
+				for(BittrexTicker market: market_bittrex){
+					String sdfg = pair.toString().replace('/', '-');
+					if(market.getMarketName().equals(pair.counterSymbol + "-" + pair.baseSymbol)){
+						return market.getBaseVolume().doubleValue();
+					}
+				}
+				break;
+			case "BTC-e":
+				BTCETicker market_btce = ((BTCEMarketDataServiceRaw) exchange.getPollingMarketDataService()).getBTCETicker(pair.toString()).getTicker(pair.toString());
+				market_btce.getVol();
+				return ((BTCEMarketDataServiceRaw) exchange.getPollingMarketDataService()).getBTCETicker(pair.toString()).getTicker(pair.toString()).getVol().doubleValue();
+			case "Kraken":
+				return ((KrakenMarketDataServiceRaw) exchange.getPollingMarketDataService()).getKrakenTicker(pair).get24HourVolumeAvg().doubleValue();
+		}
+		return 0.0;
 	}
 	
 	public CurrencyPair checkCurrencyPair(CurrencyPair pair, PollingMarketDataService marketDataService) throws ExchangeException, NotAvailableFromExchangeException, NotYetImplementedForExchangeException, IOException{
