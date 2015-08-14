@@ -355,9 +355,9 @@ public class TradeBot {
 				}
 				break;
 			case "BTC-e":
-				BTCETicker market_btce = ((BTCEMarketDataServiceRaw) exchange.getPollingMarketDataService()).getBTCETicker(pair.toString()).getTicker(pair.toString());
-				market_btce.getVol();
-				return ((BTCEMarketDataServiceRaw) exchange.getPollingMarketDataService()).getBTCETicker(pair.toString()).getTicker(pair.toString()).getVol().doubleValue();
+				String underscorePair = pair.toString().replace('/','_');
+				BTCETicker market_btce = ((BTCEMarketDataServiceRaw) exchange.getPollingMarketDataService()).getBTCETicker(underscorePair).getTicker(underscorePair);
+				return market_btce.getVolCur().doubleValue();
 			case "Kraken":
 				return ((KrakenMarketDataServiceRaw) exchange.getPollingMarketDataService()).getKrakenTicker(pair).get24HourVolumeAvg().doubleValue();
 		}
