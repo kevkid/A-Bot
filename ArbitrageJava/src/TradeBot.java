@@ -15,6 +15,7 @@ import com.xeiam.xchange.ExchangeFactory;
 import com.xeiam.xchange.ExchangeSpecification;
 import com.xeiam.xchange.bittrex.v1.dto.marketdata.BittrexTicker;
 import com.xeiam.xchange.bittrex.v1.service.polling.BittrexMarketDataServiceRaw;
+import com.xeiam.xchange.bleutrade.service.polling.BleutradeMarketDataServiceRaw;
 import com.xeiam.xchange.btce.v3.dto.marketdata.BTCETicker;
 import com.xeiam.xchange.btce.v3.dto.meta.BTCEMetaData;
 import com.xeiam.xchange.btce.v3.service.polling.BTCEMarketDataServiceRaw;
@@ -214,15 +215,19 @@ public class TradeBot {
 		Double EX1_CoinBalance =1.0;// EX1_accountService.getAccountInfo().getWallet(StartCoin).getAvailable().doubleValue();
 		
 		OrderBook EX1_OrderBook = EX1_marketDataService.getOrderBook(checkCurrencyPair(pair,EX1_marketDataService));
+		EX1_Volume = checkMarketVolume(checkCurrencyPair(pair,EX1_marketDataService),exchange1);
+		if(EX1_Volume < 0.5){
+			System.out.println("Volume to low. Sleeping for an hour");
+			Thread.sleep(3600000);//Volume To Low
+		}
 		EX1_PairBuy = (EX1_OrderBook.getAsks().get(0).getLimitPrice()).doubleValue();//buys
 		EX1_PairSell = (EX1_OrderBook.getBids().get(0).getLimitPrice()).doubleValue();//sells
-		EX1_Volume = checkMarketVolume(checkCurrencyPair(pair,EX1_marketDataService),exchange1);
 		EX1_PairFee = checkExchangeFee(exchange1, checkCurrencyPair(pair,EX1_marketDataService));//getFees(StartPair);//getFee
 		//EX1_Volume = checkMarketVolume(checkCurrencyPair(pair,EX1_marketDataService),exchange1);
-		if(exchange1.getExchangeSpecification().getExchangeName().equalsIgnoreCase("Kraken") && pair.baseSymbol.equals("LTC") && pair.counterSymbol.equals("BTC")){
-			EX1_PairBuy = 1/EX1_PairBuy;
-			EX1_PairSell = 1/EX1_PairSell;
-		}
+//		if(exchange1.getExchangeSpecification().getExchangeName().equalsIgnoreCase("Kraken") && pair.baseSymbol.equals("LTC") && pair.counterSymbol.equals("BTC")){
+//			EX1_PairBuy = 1/EX1_PairBuy;
+//			EX1_PairSell = 1/EX1_PairSell;
+//		}
 		if(StartCoin.equalsIgnoreCase(pair.counterSymbol)){
 			EX1_PurchaseAmount = (EX1_CoinBalance-(EX1_CoinBalance*EX1_PairFee))/EX1_PairBuy;//how many coins I can buy with the amount of start coins.
 		}
@@ -230,17 +235,21 @@ public class TradeBot {
 			EX1_PurchaseAmount = (StartCoinBalance-(StartCoinBalance*EX1_PairFee))*EX1_PairSell;//how many coins I can buy with the amount of start coins.
 		}
 		OrderBook EX2_PairOrderBook = EX2_marketDataService.getOrderBook(checkCurrencyPair(pair,EX2_marketDataService));
+		EX2_Volume = checkMarketVolume(checkCurrencyPair(pair,EX2_marketDataService),exchange2);
+		if(EX2_Volume < 0.5){
+			System.out.println("Volume to low. Sleeping for an hour");
+			Thread.sleep(3600000);//Volume To Low
+		}
 		EX2_PairBuy = EX2_PairOrderBook.getAsks().get(0).getLimitPrice().doubleValue();//buys
 		EX2_PairSell = EX2_PairOrderBook.getBids().get(0).getLimitPrice().doubleValue();//sells
 		EX2_PairFee = checkExchangeFee(exchange2, checkCurrencyPair(pair,EX1_marketDataService));//getFees(EndPair);
-		EX2_Volume = checkMarketVolume(checkCurrencyPair(pair,EX2_marketDataService),exchange2);
-		if(exchange2.getExchangeSpecification().getExchangeName().equalsIgnoreCase("Kraken") && pair.baseSymbol.equals("LTC") && pair.counterSymbol.equals("BTC")){
-			EX2_PairBuy = 1/EX2_PairBuy;
-			EX2_PairSell = 1/EX2_PairSell;
-		}
-		else{
+		//if(exchange2.getExchangeSpecification().getExchangeName().equalsIgnoreCase("Kraken") && pair.baseSymbol.equals("LTC") && pair.counterSymbol.equals("BTC")){
+			//EX2_PairBuy = 1/EX2_PairBuy;
+			//EX2_PairSell = 1/EX2_PairSell;
+		//}
+		//else{
 			//System.out.println(exchange2.getExchangeSpecification().getExchangeName());
-		}
+		//}
 		if(EndCoin.equalsIgnoreCase(pair.counterSymbol)){
 			EX2_PurchaseAmount = (EX1_PurchaseAmount-(EX1_PurchaseAmount*EX2_PairFee))/EX2_PairBuy;
 
@@ -329,6 +338,12 @@ public class TradeBot {
 			return getFeesCryptsy(currencyPair, exchange.getPollingMarketDataService());
 		case "Bittrex":
 			return 0.0025;//
+		case "Kraken":
+			break;//return (KrakenMarketDataServiceRaw)exchange.getPollingMarketDataService().getTicker(currencyPair).
+		case "Bleutrade":
+			return 0.0025;
+		case "Poloniex":
+			return 0.002;
 		}
 		return 0.0;
 		
@@ -348,7 +363,6 @@ public class TradeBot {
 				
 				ArrayList<BittrexTicker> market_bittrex = ((BittrexMarketDataServiceRaw) exchange.getPollingMarketDataService()).getBittrexTickers();
 				for(BittrexTicker market: market_bittrex){
-					String sdfg = pair.toString().replace('/', '-');
 					if(market.getMarketName().equals(pair.counterSymbol + "-" + pair.baseSymbol)){
 						return market.getBaseVolume().doubleValue();
 					}
@@ -359,7 +373,9 @@ public class TradeBot {
 				BTCETicker market_btce = ((BTCEMarketDataServiceRaw) exchange.getPollingMarketDataService()).getBTCETicker(underscorePair).getTicker(underscorePair);
 				return market_btce.getVolCur().doubleValue();
 			case "Kraken":
-				return ((KrakenMarketDataServiceRaw) exchange.getPollingMarketDataService()).getKrakenTicker(pair).get24HourVolumeAvg().doubleValue();
+				return ((KrakenMarketDataServiceRaw) exchange.getPollingMarketDataService()).getKrakenTicker(pair).get24HourVolume().doubleValue();
+			case "Bleutrade":
+				return ((BleutradeMarketDataServiceRaw)exchange.getPollingMarketDataService()).getBleutradeTicker(pair).getVolume().doubleValue();
 		}
 		return 0.0;
 	}
