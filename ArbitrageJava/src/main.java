@@ -61,7 +61,7 @@ public class main {
 	    Exchange krakenExchange = ExchangeFactory.INSTANCE.createExchange(ex_spec_kraken);
 	    krakenExchange.getExchangeSpecification().setApiKey("");
 	    krakenExchange.getExchangeSpecification().setSecretKey("");
-	    krakenExchange.getExchangeSpecification().setUserName("kevkid");
+	    krakenExchange.getExchangeSpecification().setUserName("");
 	    
 	    ex_spec_btce.setApiKey("");
 		ex_spec_btce.setSecretKey("");
