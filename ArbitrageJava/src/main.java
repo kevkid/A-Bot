@@ -97,18 +97,15 @@ public class main {
 							exchangeList.get(outer_index).getPollingMarketDataService(), exchangeList.get(outer_index).getPollingTradeService(), 
 							exchangeList.get(inner_index).getPollingAccountService(),exchangeList.get(inner_index).getPollingMarketDataService(),
 							exchangeList.get(inner_index).getPollingTradeService());
-						Thread.sleep(1000);
 						new TradeBot(exchangeList.get(inner_index), exchangeList.get(outer_index),  
 								market,  exchangeList.get(inner_index).getPollingAccountService(), 
 								exchangeList.get(inner_index).getPollingMarketDataService(), exchangeList.get(inner_index).getPollingTradeService(), 
 								exchangeList.get(outer_index).getPollingAccountService(),exchangeList.get(outer_index).getPollingMarketDataService(),
 								exchangeList.get(outer_index).getPollingTradeService());
-						Thread.sleep(1000);
-					}
-					System.out.println("finished going through all exchanges");
-					
+					}					
 				}
 			}
+			System.out.println("finished going through all exchanges");
 			
 			
 			//TradeBot BleuCryBot = new TradeBot(ex_bleutrade, ex_Cryptsy,  new CurrencyPair("LTC", "BTC"),  accountService_bleutrade, marketDataService_bleutrade, tradeService_bleutrade, accountService_Cryptsy,marketDataService_Cryptsy,tradeService_Cryptsy);

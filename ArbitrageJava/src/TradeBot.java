@@ -67,7 +67,7 @@ public class TradeBot {
 							Thread.sleep(2000);
 						}
 					} catch (ExchangeException | NotAvailableFromExchangeException
-							| NotYetImplementedForExchangeException | InterruptedException | IOException e1) {
+							| NotYetImplementedForExchangeException | InterruptedException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
@@ -204,7 +204,8 @@ public class TradeBot {
 		return toTrade;
 	}
 	
-	public boolean checkMarketDifferentExchanges(CurrencyPair pair, PollingAccountService EX1_accountService, PollingMarketDataService EX1_marketDataService, PollingTradeService EX1_tradeService, PollingAccountService EX2_accountService, PollingMarketDataService EX2_marketDataService, PollingTradeService EX2_tradeService) throws ExchangeException, NotAvailableFromExchangeException, NotYetImplementedForExchangeException, IOException, InterruptedException{
+	public boolean checkMarketDifferentExchanges(CurrencyPair pair, PollingAccountService EX1_accountService, PollingMarketDataService EX1_marketDataService, PollingTradeService EX1_tradeService, PollingAccountService EX2_accountService, PollingMarketDataService EX2_marketDataService, PollingTradeService EX2_tradeService){
+		try{
 		boolean toTrade = false;
 		double StartPairFee, EndPairFee, DirectPairFee, BackToStartCurrencyPairFee;//all in percent
 		double EX1_PurchaseAmount, EX2_PurchaseAmount, EX1_Volume, EX2_Volume;
@@ -263,6 +264,12 @@ public class TradeBot {
 				System.out.println("Pair: " + pair + " Route: " + exchange1.getExchangeSpecification().getExchangeName() + " -> " + exchange2.getExchangeSpecification().getExchangeName() + " Should I trade? " + toTrade + " Percent change: " + new DecimalFormat("##.####").format(percentChange) + "%");
 			}
 		return toTrade;
+		}
+		catch(ExchangeException | NotAvailableFromExchangeException | NotYetImplementedForExchangeException | IOException | InterruptedException | NullPointerException | IndexOutOfBoundsException e){
+			//e.printStackTrace();
+			System.out.println("something went wrong");
+			return false;
+		}
 	}
 
 	public double getFeesCryptsy(CurrencyPair pair, PollingMarketDataService marketDataService ){
