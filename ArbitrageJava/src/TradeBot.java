@@ -219,8 +219,8 @@ public class TradeBot {
 		OrderBook EX1_OrderBook = EX1_marketDataService.getOrderBook(checkCurrencyPair(pair,EX1_marketDataService));
 		EX1_Volume = checkMarketVolume(checkCurrencyPair(pair,EX1_marketDataService),exchange1);
 		if(EX1_Volume < MAX_VOLUME){
-			System.out.println("Volume to low. Sleeping for an hour");
-			Thread.sleep(3600000);//Volume To Low
+			System.out.println("Volume to low. Sleeping for a day");
+			Thread.sleep(86400000);//Volume To Low
 		}
 		EX1_PairBuy = (EX1_OrderBook.getAsks().get(0).getLimitPrice()).doubleValue();//buys
 		EX1_PairSell = (EX1_OrderBook.getBids().get(0).getLimitPrice()).doubleValue();//sells
@@ -266,7 +266,7 @@ public class TradeBot {
 			}
 		return toTrade;
 		}
-		catch(ExchangeException | NotAvailableFromExchangeException | NotYetImplementedForExchangeException | IOException | InterruptedException | NullPointerException | IndexOutOfBoundsException e){
+		catch(com.xeiam.xchange.exceptions.ExchangeException | NotAvailableFromExchangeException | NotYetImplementedForExchangeException | IOException | InterruptedException | NullPointerException | IndexOutOfBoundsException e){
 			//e.printStackTrace();
 			System.out.println("something went wrong");
 			return false;

@@ -92,17 +92,13 @@ public class main {
 					List<CurrencyPair> ex2CPList = exchangeList.get(inner_index).getPollingMarketDataService().getExchangeSymbols();
 					ex1CPList.retainAll(ex2CPList);
 					for(CurrencyPair market : ex1CPList){
-						if(!market.baseSymbol.equals("USD") && !market.counterSymbol.equals("USD")){//no usd markets
+						if(!market.baseSymbol.equals("USD") && !market.counterSymbol.equals("USD") && !market.baseSymbol.equals("EUR") && !market.counterSymbol.equals("EUR") && !market.baseSymbol.equals("CAD") && !market.counterSymbol.equals("CAD")){//no usd markets
 							new TradeBot(exchangeList.get(outer_index), exchangeList.get(inner_index),  
 									market,  exchangeList.get(outer_index).getPollingAccountService(), 
 									exchangeList.get(outer_index).getPollingMarketDataService(), exchangeList.get(outer_index).getPollingTradeService(), 
 									exchangeList.get(inner_index).getPollingAccountService(),exchangeList.get(inner_index).getPollingMarketDataService(),
 									exchangeList.get(inner_index).getPollingTradeService());
-								new TradeBot(exchangeList.get(inner_index), exchangeList.get(outer_index),  
-										market,  exchangeList.get(inner_index).getPollingAccountService(), 
-										exchangeList.get(inner_index).getPollingMarketDataService(), exchangeList.get(inner_index).getPollingTradeService(), 
-										exchangeList.get(outer_index).getPollingAccountService(),exchangeList.get(outer_index).getPollingMarketDataService(),
-										exchangeList.get(outer_index).getPollingTradeService());
+							Thread.sleep(250);
 						}
 					}					
 				}
