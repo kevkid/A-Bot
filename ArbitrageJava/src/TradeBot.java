@@ -205,6 +205,7 @@ public class TradeBot {
 	}
 	
 	public boolean checkMarketDifferentExchanges(CurrencyPair pair, PollingAccountService EX1_accountService, PollingMarketDataService EX1_marketDataService, PollingTradeService EX1_tradeService, PollingAccountService EX2_accountService, PollingMarketDataService EX2_marketDataService, PollingTradeService EX2_tradeService){
+		final int MAX_VOLUME = 2;  
 		try{
 		boolean toTrade = false;
 		double StartPairFee, EndPairFee, DirectPairFee, BackToStartCurrencyPairFee;//all in percent
@@ -217,7 +218,7 @@ public class TradeBot {
 		
 		OrderBook EX1_OrderBook = EX1_marketDataService.getOrderBook(checkCurrencyPair(pair,EX1_marketDataService));
 		EX1_Volume = checkMarketVolume(checkCurrencyPair(pair,EX1_marketDataService),exchange1);
-		if(EX1_Volume < 0.5){
+		if(EX1_Volume < MAX_VOLUME){
 			System.out.println("Volume to low. Sleeping for an hour");
 			Thread.sleep(3600000);//Volume To Low
 		}
@@ -237,7 +238,7 @@ public class TradeBot {
 		}
 		OrderBook EX2_PairOrderBook = EX2_marketDataService.getOrderBook(checkCurrencyPair(pair,EX2_marketDataService));
 		EX2_Volume = checkMarketVolume(checkCurrencyPair(pair,EX2_marketDataService),exchange2);
-		if(EX2_Volume < 0.5){
+		if(EX2_Volume < MAX_VOLUME){
 			System.out.println("Volume to low. Sleeping for an hour");
 			Thread.sleep(3600000);//Volume To Low
 		}
