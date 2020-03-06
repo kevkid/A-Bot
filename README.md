@@ -1,3 +1,3 @@
-# A-Bot
+# Arbitrage bot
 
 Arbitrage bot for trading different crypto currencies at different crypto exchanges to capitalize on price differences written in Java. We included services such as bittrex, btce, kraken, cryptsy, and others. Some of the currencies used to trade include: LTC, BTC, DOGE, and CNC. We checked the markets every n minutes, to check if there was a difference in price for the different tokens, if one token was priced differently in one exchange we calculate the difference between buying price at one exchange, and selling price of another and included the fees associated with withdrawing, buying, and selling. Because some exchanges only allowed certain currencies to be used for purchasing other coins we also took into account the cost of buying interum coins. Currently, this code is not maintained and some of these exchanges have become defunct.
